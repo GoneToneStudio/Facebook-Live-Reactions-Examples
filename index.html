@@ -1,0 +1,83 @@
+﻿<html><head>
+    <meta charset="utf-8">
+    <title>FB 心情投票記數直播範例</title>
+  </head><body>
+    <h1>FB 心情投票記數直播範例</h1>
+    <p>使用 HTML &amp; JavaScript 編寫，By <a href="https://www.facebook.com/GoneToneDY/" target="_blank">旋風之音 GoneTone</a> </p>
+    <br>
+    
+    <!-- 讚 -->
+    <span class="like">
+        <img class="media-object" src="emojis\like.png" height="25" width="25">
+        <span class="counter" style="font-size:2em;">Null</span>
+    </span>&nbsp;
+    
+    <!-- 大心 -->
+    <span class="love">
+        <img class="media-object" src="emojis\love.png" height="25" width="25">
+        <span class="counter" style="font-size:2em;">Null</span>
+    </span>&nbsp;
+    
+    <!-- 哈 -->
+    <span class="haha">
+        <img class="media-object" src="emojis\haha.png" height="25" width="25">
+        <span class="counter" style="font-size:2em;">Null</span>
+    </span>&nbsp;
+    
+    <!-- 哇 -->
+    <span class="wow">
+        <img class="media-object" src="emojis\wow.png" height="25" width="25">
+        <span class="counter" style="font-size:2em;">Null</span>
+    </span>&nbsp;
+    
+    <!-- 嗚 -->
+    <span class="sad">
+        <img class="media-object" src="emojis\sad.png" height="25" width="25">
+        <span class="counter" style="font-size:2em;">Null</span>
+    </span>&nbsp;
+    
+    <!-- 怒 -->
+    <span class="angry">
+        <img class="media-object" src="emojis\angry.png" height="25" width="25">
+        <span class="counter" style="font-size:2em;">Null</span>
+    </span>
+    
+    <script src="jquery.min.js"></script>
+    <script src="lodash.min.js"></script>
+    <script>
+    "use strict";
+    var access_token = 'ACCESS_TOKEN_HERE'; // 貼上你的 Facebook 訪問令牌
+    var postID = 'POST_ID_HERE'; // 貼上你的文章 ID
+    var refreshTime = 5; // 刷新時間(秒)
+    var defaultCount = 0; // 計數開始初始數量
+  
+    var reactions = ['LIKE', 'LOVE', 'HAHA', 'WOW', 'SAD', 'ANGRY'].map(function (e) {
+        var code = 'reactions_' + e.toLowerCase();
+        return 'reactions.type(' + e + ').limit(0).summary(total_count).as(' + code + ')'
+    }).join(',');
+  
+    var v1 = $('.like .counter'),
+        v2 = $('.love .counter'),
+        v3 = $('.haha .counter'),
+        v4 = $('.wow .counter'),
+        v5 = $('.sad .counter'),
+        v6 = $('.angry .counter');
+  
+    function refreshCounts() {
+        var url = 'https://graph.facebook.com/v2.8/?ids=' + postID + '&fields=' + reactions + '&access_token=' + access_token;
+        $.getJSON(url, function(res){
+            v1.text(defaultCount + res[postID].reactions_like.summary.total_count);
+            v2.text(defaultCount + res[postID].reactions_love.summary.total_count);
+            v3.text(defaultCount + res[postID].reactions_haha.summary.total_count);
+            v4.text(defaultCount + res[postID].reactions_wow.summary.total_count);
+            v5.text(defaultCount + res[postID].reactions_sad.summary.total_count);
+            v6.text(defaultCount + res[postID].reactions_angry.summary.total_count);
+        });
+    }
+  
+    $(document).ready(function(){
+        setInterval(refreshCounts, refreshTime * 1000);
+        refreshCounts();
+    });
+    </script>
+</body></html>
